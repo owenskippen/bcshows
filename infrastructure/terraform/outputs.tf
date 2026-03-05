@@ -61,6 +61,31 @@ output "environment_file_content" {
   }
 }
 
+output "cognito_user_pool_id" {
+  description = "Cognito User Pool ID"
+  value       = aws_cognito_user_pool.admin_users.id
+}
+
+output "cognito_user_pool_arn" {
+  description = "Cognito User Pool ARN"
+  value       = aws_cognito_user_pool.admin_users.arn
+}
+
+output "cognito_user_pool_client_id" {
+  description = "Cognito User Pool Client ID"
+  value       = aws_cognito_user_pool_client.api_client.id
+}
+
+output "cognito_identity_pool_id" {
+  description = "Cognito Identity Pool ID"
+  value       = aws_cognito_identity_pool.main.id
+}
+
+output "cognito_domain" {
+  description = "Cognito domain for sign-in URLs"
+  value       = aws_cognito_user_pool_domain.admin_domain.domain
+}
+
 output "deployment_info" {
   description = "Deployment information"
   value = {
@@ -72,5 +97,7 @@ output "deployment_info" {
       aws_dynamodb_table.locations.name,
       aws_dynamodb_table.scrape_log.name
     ]
+    cognito_pool_id    = aws_cognito_user_pool.admin_users.id
+    cognito_client_id  = aws_cognito_user_pool_client.api_client.id
   }
 }
