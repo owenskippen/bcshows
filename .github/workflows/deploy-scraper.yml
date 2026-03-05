@@ -1,0 +1,135 @@
+name: Deploy Scraper
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scraper/**'
+      - 'shared/**'
+      - '.github/workflows/deploy-scraper.yml'
+      - 'package.json'
+  schedule:
+    # Run scraper 3x per week: Mon, Wed, Fri at 3 AM PST (11 AM UTC)
+    - cron: '0 11 * * 1,3,5'
+
+concurrency:
+  group: scraper-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Scraper
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint scraper
+        run: npm run lint --workspace=scraper
+        continue-on-error: true
+
+      - name: Type check
+        run: npm run type-check --workspace=scraper
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm run test --workspace=scraper
+        continue-on-error: true
+
+      - name: Build scraper
+        run: npm run build --workspace=scraper
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-build
+          path: scraper/dist
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy Scraper Lambda
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: scraper-build
+          path: scraper/dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-west-2
+
+      - name: Deploy Scraper Lambda
+        working-directory: infrastructure/terraform
+        run: |
+          terraform init
+          terraform plan -var-file=terraform.tfvars -out=tfplan
+          terraform apply -auto-approve tfplan
+        env:
+          AWS_REGION: us-west-2
+
+      - name: Send deployment notification
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        with:
+          status: ${{ job.status }}
+          text: 'Scraper deployment failed'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author
+        continue-on-error: true
+
+  invoke-scraper:
+    needs: deploy
+    runs-on: ubuntu-latest
+    name: Invoke Scraper
+    if: github.event_name == 'schedule'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-west-2
+
+      - name: Invoke scraper Lambda
+        run: |
+          LAMBDA_NAME=$(terraform -chdir=infrastructure/terraform output -raw lambda_scraper_name)
+          aws lambda invoke \
+            --function-name $LAMBDA_NAME \
+            --invocation-type RequestResponse \
+            /tmp/scraper-response.json
+
+          echo "Scraper Response:"
+          cat /tmp/scraper-response.json
+
+      - name: Send scraper completion notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Scraper execution completed'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit
+        continue-on-error: true

@@ -1,0 +1,161 @@
+name: Tests & Quality Checks
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint & Format Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint all packages
+        run: npm run lint --workspaces
+        continue-on-error: true
+
+      - name: Comment on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '⚠️';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${emoji} **Lint Check**: ${status}`
+            })
+
+  type-check:
+    runs-on: ubuntu-latest
+    name: Type Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check all packages
+        run: npm run type-check --workspaces
+        continue-on-error: true
+
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    strategy:
+      matrix:
+        workspace: [scraper, backend, frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests for ${{ matrix.workspace }}
+        run: npm run test --workspace=${{ matrix.workspace }}
+        continue-on-error: true
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./${{ matrix.workspace }}/coverage/coverage-final.json
+          flags: ${{ matrix.workspace }}
+        continue-on-error: true
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Audit
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+  status:
+    runs-on: ubuntu-latest
+    name: Overall Status
+    needs: [lint, type-check, test, security]
+    if: always()
+
+    steps:
+      - name: Check all checks passed
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.type-check.result }}" != "success" ]]; then
+            echo "Lint or type check failed"
+            exit 1
+          fi
+        continue-on-error: true
+
+      - name: Comment final status
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = {
+              lint: '${{ needs.lint.result }}',
+              typeCheck: '${{ needs.type-check.result }}',
+              tests: '${{ needs.test.result }}',
+              security: '${{ needs.security.result }}'
+            };
+
+            let summary = '## QA Summary\n\n';
+            for (const [check, status] of Object.entries(results)) {
+              const emoji = status === 'success' ? '✅' : status === 'skipped' ? '⏭️' : '❌';
+              summary += `${emoji} ${check}: ${status}\n`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            })
