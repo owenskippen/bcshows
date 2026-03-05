@@ -1,0 +1,34 @@
+# Development Environment Configuration
+# Copy this to terraform.tfvars and adjust as needed
+
+aws_region = "us-west-2"
+environment = "dev"
+app_name = "bcshows"
+
+# DynamoDB: Use provisioned for dev (cheaper when not in use)
+dynamodb_billing_mode = "PROVISIONED"
+dynamodb_read_capacity = 1
+dynamodb_write_capacity = 1
+
+# Lambda: Basic size for development
+lambda_timeout = 60
+lambda_memory_size = 256
+
+# Scraper: Run 3x per week
+# Mon, Wed, Fri at 3 AM PST
+scraper_schedule = "cron(0 3 ? * MON,WED,FRI *)"
+scraper_enabled = true
+
+# API
+api_stage = "dev"
+cors_allowed_origins = [
+  "http://localhost:3000",
+  "http://localhost:3001"
+]
+
+# Tags
+tags = {
+  Project     = "bcshows"
+  Environment = "dev"
+  ManagedBy   = "Terraform"
+}

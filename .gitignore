@@ -1,0 +1,77 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+*.tgz
+*.tar.gz
+
+# Logs
+logs/
+*.log
+
+# Python (for scripting)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+
+# AWS
+aws_config.json
+
+# Terraform
+infrastructure/terraform/.terraform/
+infrastructure/terraform/*.tfstate*
+infrastructure/terraform/.terraform.lock.hcl
+infrastructure/terraform/*.tfvars
+!infrastructure/terraform/terraform.tfvars.example
+
+# Vercel
+.vercel/
+
+# Package lock files (optional - some teams commit these)
+# package-lock.json
+# yarn.lock
+
+# Exclude sensitive files
+.ssh/
+*.key
+*.pem
+secrets.json
+credentials.json
