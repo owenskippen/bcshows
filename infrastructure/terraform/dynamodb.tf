@@ -1,19 +1,10 @@
 # CardShows Table
 resource "aws_dynamodb_table" "shows" {
   name           = "${local.project_name}-shows-${local.environment}"
-  billing_mode   = local.table_settings.shows.billing_mode
+  billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "pk"
   range_key      = "sk"
   stream_enabled = local.table_settings.shows.stream_specification_enabled
-
-  # Provisioned throughput (only for PROVISIONED billing mode)
-  dynamic "provisioned_throughput" {
-    for_each = local.table_settings.shows.billing_mode == "PROVISIONED" ? [1] : []
-    content {
-      read_capacity_units  = local.table_settings.shows.read_capacity
-      write_capacity_units = local.table_settings.shows.write_capacity
-    }
-  }
 
   # Attributes
   attribute {
@@ -42,14 +33,6 @@ resource "aws_dynamodb_table" "shows" {
     hash_key        = "city"
     range_key       = "date"
     projection_type = "ALL"
-
-    dynamic "provisioned_throughput" {
-      for_each = local.table_settings.shows.billing_mode == "PROVISIONED" ? [1] : []
-      content {
-        read_capacity_units  = 5
-        write_capacity_units = 5
-      }
-    }
   }
 
   # Global Secondary Index for Date-based queries
@@ -58,14 +41,6 @@ resource "aws_dynamodb_table" "shows" {
     hash_key        = "date"
     range_key       = "city"
     projection_type = "ALL"
-
-    dynamic "provisioned_throughput" {
-      for_each = local.table_settings.shows.billing_mode == "PROVISIONED" ? [1] : []
-      content {
-        read_capacity_units  = 5
-        write_capacity_units = 5
-      }
-    }
   }
 
   # Time to Live for auto-deletion of old shows (after 2 years)
@@ -88,11 +63,10 @@ resource "aws_dynamodb_table" "shows" {
 
 # Locations Table
 resource "aws_dynamodb_table" "locations" {
-  name           = "${local.project_name}-locations-${local.environment}"
-  billing_mode   = local.table_settings.locations.billing_mode
-  hash_key       = "pk"
-  range_key      = "sk"
-  stream_enabled = local.table_settings.locations.stream_specification_enabled
+  name         = "${local.project_name}-locations-${local.environment}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "pk"
+  range_key    = "sk"
 
   attribute {
     name = "pk"
@@ -102,14 +76,6 @@ resource "aws_dynamodb_table" "locations" {
   attribute {
     name = "sk"
     type = "S"
-  }
-
-  dynamic "provisioned_throughput" {
-    for_each = local.table_settings.locations.billing_mode == "PROVISIONED" ? [1] : []
-    content {
-      read_capacity_units  = local.table_settings.locations.read_capacity
-      write_capacity_units = local.table_settings.locations.write_capacity
-    }
   }
 
   point_in_time_recovery {
@@ -126,11 +92,10 @@ resource "aws_dynamodb_table" "locations" {
 
 # Scrape Log Table
 resource "aws_dynamodb_table" "scrape_log" {
-  name           = "${local.project_name}-scrape-log-${local.environment}"
-  billing_mode   = local.table_settings.scrape_log.billing_mode
-  hash_key       = "pk"
-  range_key      = "sk"
-  stream_enabled = local.table_settings.scrape_log.stream_specification_enabled
+  name         = "${local.project_name}-scrape-log-${local.environment}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "pk"
+  range_key    = "sk"
 
   attribute {
     name = "pk"
@@ -146,14 +111,6 @@ resource "aws_dynamodb_table" "scrape_log" {
   ttl {
     attribute_name = "expiresAt"
     enabled        = true
-  }
-
-  dynamic "provisioned_throughput" {
-    for_each = local.table_settings.scrape_log.billing_mode == "PROVISIONED" ? [1] : []
-    content {
-      read_capacity_units  = local.table_settings.scrape_log.read_capacity
-      write_capacity_units = local.table_settings.scrape_log.write_capacity
-    }
   }
 
   point_in_time_recovery {

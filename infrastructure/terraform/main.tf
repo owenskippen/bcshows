@@ -37,10 +37,10 @@ locals {
   environment  = var.environment
   aws_region   = var.aws_region
 
-  table_settings = var.environment == "prod" ? {
+  table_settings = {
     shows = {
       billing_mode                = "PAY_PER_REQUEST"
-      stream_specification_enabled = true
+      stream_specification_enabled = var.environment == "prod" ? true : false
     }
     locations = {
       billing_mode                = "PAY_PER_REQUEST"
@@ -49,23 +49,6 @@ locals {
     scrape_log = {
       billing_mode                = "PAY_PER_REQUEST"
       stream_specification_enabled = false
-    }
-  } : {
-    shows = {
-      billing_mode                = "PROVISIONED"
-      read_capacity              = 5
-      write_capacity             = 5
-      stream_specification_enabled = false
-    }
-    locations = {
-      billing_mode        = "PROVISIONED"
-      read_capacity       = 1
-      write_capacity      = 1
-    }
-    scrape_log = {
-      billing_mode        = "PROVISIONED"
-      read_capacity       = 1
-      write_capacity      = 1
     }
   }
 }
