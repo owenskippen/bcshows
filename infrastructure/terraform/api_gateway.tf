@@ -160,8 +160,8 @@ resource "aws_api_gateway_stage" "api" {
   stage_name    = var.api_stage
 
   access_log_settings {
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.api_logs.arn
-    format                   = "$context.requestId $context.error.messageString $context.error.type $context.stage $context.accountId $context.identity.sourceIp $context.requestTime $context.routeKey $context.status $context.integration.latency"
+    destination_arn = aws_cloudwatch_log_group.api_logs.arn
+    format          = "$context.requestId $context.error.messageString $context.error.type $context.stage $context.accountId $context.identity.sourceIp $context.requestTime $context.routeKey $context.status $context.integration.latency"
   }
 
   tags = var.tags
