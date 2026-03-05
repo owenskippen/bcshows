@@ -1,0 +1,38 @@
+{
+  "name": "bcshows-frontend",
+  "version": "0.1.0",
+  "description": "React frontend for BC Card Shows Aggregator",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint src --ext .tsx,.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.20.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "date-fns": "^2.30.0",
+    "axios": "^1.6.2",
+    "zustand": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "typescript": "^5.3.3",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "vitest": "^1.0.4",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2"
+  }
+}

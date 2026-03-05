@@ -1,0 +1,22 @@
+{
+  "name": "bcshows",
+  "version": "0.1.0",
+  "description": "British Columbia Card Shows Aggregator",
+  "private": true,
+  "workspaces": [
+    "scraper",
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "deploy": "npm run build && npm run deploy --workspaces"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

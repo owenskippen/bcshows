@@ -1,0 +1,174 @@
+/* Show Card Styles */
+.show-card {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+.show-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: var(--background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+}
+
+.show-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+.show-name {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-color);
+  line-height: 1.4;
+}
+
+.show-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .label {
+    font-weight: 600;
+    color: var(--light-text);
+    min-width: 70px;
+  }
+
+  .value {
+    color: var(--text-color);
+  }
+}
+
+.show-address {
+  padding: 0.75rem;
+  background-color: var(--background-color);
+  border-radius: 4px;
+  font-size: 0.85rem;
+
+  .label {
+    font-weight: 600;
+    color: var(--light-text);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.4;
+  }
+}
+
+.show-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.775rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.show-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+
+  .website-link {
+    inline-size: auto;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    &:hover {
+      background-color: var(--secondary-color);
+      text-decoration: none;
+    }
+  }
+
+  .admission-price {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+  }
+}
+
+/* Shows Grid */
+.shows-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .shows-list {
+    grid-template-columns: 1fr;
+  }
+
+  .show-content {
+    padding: 1rem;
+  }
+
+  .meta-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
