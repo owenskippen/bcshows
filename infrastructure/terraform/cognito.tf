@@ -102,7 +102,6 @@ resource "aws_cognito_user_group" "admin_group" {
   name           = "admin"
   user_pool_id   = aws_cognito_user_pool.admin_users.id
   description    = "Admin users with full access to shows management"
-  priority       = 10
 }
 
 # Moderator User Group (for future use)
@@ -110,7 +109,6 @@ resource "aws_cognito_user_group" "moderator_group" {
   name           = "moderator"
   user_pool_id   = aws_cognito_user_pool.admin_users.id
   description    = "Moderators with limited show approval access"
-  priority       = 20
 }
 
 # Data source for current AWS account ID
@@ -121,10 +119,8 @@ resource "aws_cognito_identity_pool" "main" {
   identity_pool_name               = "${local.project_name}-identity-${local.environment}"
   allow_unauthenticated_identities = false
 
-  cognito_identity_providers {
-    client_id              = aws_cognito_user_pool_client.api_client.id
-    provider_name          = aws_cognito_user_pool.admin_users.provider_name
-    server_side_token_validation = false
+  supported_login_providers = {
+    "cognito-idp.${var.aws_region}.amazonaws.com/${aws_cognito_user_pool.admin_users.id}:${aws_cognito_user_pool_client.api_client.id}" = aws_cognito_user_pool_client.api_client.id
   }
 
   tags = var.tags

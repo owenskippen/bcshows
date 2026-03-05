@@ -6,9 +6,9 @@ resource "aws_dynamodb_table" "shows" {
   range_key      = "sk"
   stream_enabled = local.table_settings.shows.stream_specification_enabled
 
-  # Billing mode: PROVISIONED
-  dynamic "attribute" {
-    for_each = var.environment != "prod" ? [1] : []
+  # Provisioned throughput (only for PROVISIONED billing mode)
+  dynamic "provisioned_throughput" {
+    for_each = local.table_settings.shows.billing_mode == "PROVISIONED" ? [1] : []
     content {
       read_capacity_units  = local.table_settings.shows.read_capacity
       write_capacity_units = local.table_settings.shows.write_capacity
@@ -44,7 +44,7 @@ resource "aws_dynamodb_table" "shows" {
     projection_type = "ALL"
 
     dynamic "provisioned_throughput" {
-      for_each = var.environment != "prod" ? [1] : []
+      for_each = local.table_settings.shows.billing_mode == "PROVISIONED" ? [1] : []
       content {
         read_capacity_units  = 5
         write_capacity_units = 5
@@ -60,7 +60,7 @@ resource "aws_dynamodb_table" "shows" {
     projection_type = "ALL"
 
     dynamic "provisioned_throughput" {
-      for_each = var.environment != "prod" ? [1] : []
+      for_each = local.table_settings.shows.billing_mode == "PROVISIONED" ? [1] : []
       content {
         read_capacity_units  = 5
         write_capacity_units = 5
@@ -105,7 +105,7 @@ resource "aws_dynamodb_table" "locations" {
   }
 
   dynamic "provisioned_throughput" {
-    for_each = var.environment != "prod" ? [1] : []
+    for_each = local.table_settings.locations.billing_mode == "PROVISIONED" ? [1] : []
     content {
       read_capacity_units  = local.table_settings.locations.read_capacity
       write_capacity_units = local.table_settings.locations.write_capacity
@@ -149,7 +149,7 @@ resource "aws_dynamodb_table" "scrape_log" {
   }
 
   dynamic "provisioned_throughput" {
-    for_each = var.environment != "prod" ? [1] : []
+    for_each = local.table_settings.scrape_log.billing_mode == "PROVISIONED" ? [1] : []
     content {
       read_capacity_units  = local.table_settings.scrape_log.read_capacity
       write_capacity_units = local.table_settings.scrape_log.write_capacity
