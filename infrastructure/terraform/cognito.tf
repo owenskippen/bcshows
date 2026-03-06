@@ -18,9 +18,6 @@ resource "aws_cognito_user_pool" "admin_users" {
     email_sending_account = "COGNITO_DEFAULT"
   }
 
-  # MFA Configuration (Optional for MVP)
-  mfa_configuration = "OPTIONAL"
-
   # Device Configuration
   device_configuration {
     challenge_required_on_new_device      = false

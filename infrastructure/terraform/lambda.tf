@@ -26,7 +26,6 @@ resource "aws_lambda_function" "shows_handler" {
       ENVIRONMENT              = var.environment
       DYNAMODB_SHOWS_TABLE     = aws_dynamodb_table.shows.name
       DYNAMODB_LOCATIONS_TABLE = aws_dynamodb_table.locations.name
-      AWS_REGION               = var.aws_region
     }
   }
 
@@ -59,7 +58,6 @@ resource "aws_lambda_function" "scraper" {
       ENVIRONMENT              = var.environment
       DYNAMODB_SHOWS_TABLE     = aws_dynamodb_table.shows.name
       DYNAMODB_SCRAPE_LOG_TABLE = aws_dynamodb_table.scrape_log.name
-      AWS_REGION               = var.aws_region
       TCDB_SCRAPER_ENABLED     = "true"
     }
   }
