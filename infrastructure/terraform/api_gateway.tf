@@ -144,7 +144,6 @@ resource "aws_api_gateway_method_response" "shows_options_response" {
 # API Deployment
 resource "aws_api_gateway_deployment" "bcshows" {
   rest_api_id = aws_api_gateway_rest_api.bcshows.id
-  stage_name  = var.api_stage
 
   depends_on = [
     aws_api_gateway_integration.get_shows,

@@ -140,11 +140,6 @@ resource "aws_iam_role" "cognito_authenticated_role" {
           StringEquals = {
             "cognito-identity.amazonaws.com:aud" = aws_cognito_identity_pool.main.id
           }
-          ForAllValues = {
-            StringLike = {
-              "cognito-identity.amazonaws.com:sub" = "*"
-            }
-          }
         }
       }
     ]
