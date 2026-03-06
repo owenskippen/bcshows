@@ -127,6 +127,8 @@ resource "aws_api_gateway_integration_response" "shows_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,PUT,DELETE,OPTIONS'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
+
+  depends_on = [aws_api_gateway_method_response.shows_options_response]
 }
 
 resource "aws_api_gateway_method_response" "shows_options_response" {

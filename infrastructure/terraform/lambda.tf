@@ -119,7 +119,7 @@ resource "aws_cloudwatch_event_rule" "scraper_schedule" {
   name                = "${local.project_name}-scraper-schedule-${local.environment}"
   description         = "Trigger ${local.project_name} scraper on schedule"
   schedule_expression = var.scraper_schedule
-  is_enabled          = var.scraper_enabled
+  state               = var.scraper_enabled ? "ENABLED" : "DISABLED"
 
   tags = var.tags
 }
